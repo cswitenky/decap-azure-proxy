@@ -31,7 +31,7 @@ app.http('auth', {
 
 		const oauth2 = createOAuth();
 		const authorizationUri = oauth2.authorizeURL({
-			redirect_uri: `https://${url.hostname}/api/callback?provider=github`,
+			redirect_uri: `https://${url.hostname}/api/callback`,
 			scope: requestedScope,
 			state: randomBytes(4).toString('hex'),
 		});

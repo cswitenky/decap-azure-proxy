@@ -48,12 +48,7 @@ app.http('callback', {
 	route: 'callback',
 	handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
 		const url = new URL(request.url);
-		const provider = url.searchParams.get('provider');
 		
-		if (provider !== 'github') {
-			return { status: 400, body: 'Invalid provider' };
-		}
-
 		const code = url.searchParams.get('code');
 		if (!code) {
 			return { status: 400, body: 'Missing code' };
@@ -62,7 +57,7 @@ app.http('callback', {
 		const oauth2 = createOAuth();
 		const accessToken = await oauth2.getToken({
 			code,
-			redirect_uri: `https://${url.hostname}/api/callback?provider=github`,
+			redirect_uri: `https://${url.hostname}/api/callback`,
 		});
 		
 		return callbackScriptResponse('success', accessToken);
