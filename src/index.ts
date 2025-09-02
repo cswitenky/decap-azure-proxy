@@ -1,15 +1,11 @@
+import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 import { randomBytes } from 'node:crypto';
 import { OAuthClient } from './oauth';
 
-interface Env {
-	GITHUB_OAUTH_ID: string;
-	GITHUB_OAUTH_SECRET: string;
-}
-
-const createOAuth = (env: Env) => {
+const createOAuth = () => {
 	return new OAuthClient({
-		id: env.GITHUB_OAUTH_ID,
-		secret: env.GITHUB_OAUTH_SECRET,
+		id: process.env.GITHUB_OAUTH_ID!,
+		secret: process.env.GITHUB_OAUTH_SECRET!,
 		target: {
 			tokenHost: 'https://github.com',
 			tokenPath: '/login/oauth/access_token',
@@ -18,25 +14,34 @@ const createOAuth = (env: Env) => {
 	});
 };
 
-const handleAuth = async (url: URL, env: Env) => {
+const handleAuth = async (url: URL): Promise<HttpResponseInit> => {
 	const provider = url.searchParams.get('provider');
 	if (provider !== 'github') {
-		return new Response('Invalid provider', { status: 400 });
+		return { status: 400, body: 'Invalid provider' };
 	}
 
-	const oauth2 = createOAuth(env);
+	const oauth2 = createOAuth();
 	const authorizationUri = oauth2.authorizeURL({
-		redirect_uri: `https://${url.hostname}/callback?provider=github`,
+		redirect_uri: `https://${url.hostname}/api/callback?provider=github`,
 		scope: 'public_repo,user',
 		state: randomBytes(4).toString('hex'),
 	});
 
-	return new Response(null, { headers: { location: authorizationUri }, status: 301 });
+	return {
+		status: 302,
+		headers: {
+			location: authorizationUri,
+		},
+	};
 };
 
-const callbackScriptResponse = (status: string, token: string) => {
-	return new Response(
-		`
+const callbackScriptResponse = (status: string, token: string): HttpResponseInit => {
+	return {
+		status: 200,
+		headers: {
+			'Content-Type': 'text/html',
+		},
+		body: `
 <html>
 <head>
 	<script>
@@ -56,38 +61,56 @@ const callbackScriptResponse = (status: string, token: string) => {
 </head>
 </html>
 `,
-		{ headers: { 'Content-Type': 'text/html' } }
-	);
+	};
 };
 
-const handleCallback = async (url: URL, env: Env) => {
+const handleCallback = async (url: URL): Promise<HttpResponseInit> => {
 	const provider = url.searchParams.get('provider');
 	if (provider !== 'github') {
-		return new Response('Invalid provider', { status: 400 });
+		return { status: 400, body: 'Invalid provider' };
 	}
 
 	const code = url.searchParams.get('code');
 	if (!code) {
-		return new Response('Missing code', { status: 400 });
+		return { status: 400, body: 'Missing code' };
 	}
 
-	const oauth2 = createOAuth(env);
+	const oauth2 = createOAuth();
 	const accessToken = await oauth2.getToken({
 		code,
-		redirect_uri: `https://${url.hostname}/callback?provider=github`,
+		redirect_uri: `https://${url.hostname}/api/callback?provider=github`,
 	});
 	return callbackScriptResponse('success', accessToken);
 };
 
-export default {
-	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+// Auth endpoint
+app.http('auth', {
+	methods: ['GET'],
+	authLevel: 'anonymous',
+	route: 'auth',
+	handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
 		const url = new URL(request.url);
-		if (url.pathname === '/auth') {
-			return handleAuth(url, env);
-		}
-		if (url.pathname === '/callback') {
-			return handleCallback(url, env);
-		}
-		return new Response('Hello 👋');
+		return handleAuth(url);
 	},
-};
+});
+
+// Callback endpoint
+app.http('callback', {
+	methods: ['GET'],
+	authLevel: 'anonymous',
+	route: 'callback',
+	handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
+		const url = new URL(request.url);
+		return handleCallback(url);
+	},
+});
+
+// Default endpoint
+app.http('index', {
+	methods: ['GET'],
+	authLevel: 'anonymous',
+	route: '',
+	handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
+		return { body: 'Hello 👋' };
+	},
+});

@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "GITHUB_OAUTH_ID": "",
+    "GITHUB_OAUTH_SECRET": ""
+  }
+}

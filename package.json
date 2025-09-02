@@ -1,21 +1,20 @@
 {
-	"name": "decap-proxy",
+	"name": "decap-azure-proxy",
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest",
-		"test:debug": "yarn test --run --disableConsoleIntercept",
-		"cf-typegen": "wrangler types"
+		"build": "tsc && cp host.json dist/",
+		"dev": "func start",
+		"start": "func start",
+		"test": "vitest"
 	},
 	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.1.0",
-		"@cloudflare/workers-types": "^4.20240423.0",
+		"@azure/functions": "^4.0.0",
+		"@types/node": "^20.0.0",
 		"typescript": "^5.0.4",
-		"vitest": "1.3.0",
-		"wrangler": "^3.0.0"
+		"vitest": "1.3.0"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"@azure/functions": "^4.0.0"
+	}
 }
