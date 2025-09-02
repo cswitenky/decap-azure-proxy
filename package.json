@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"build": "tsc && cp host.json dist/",
+		"build": "tsc && cp host.json dist/ && mkdir -p build && cp index.html build/",
 		"dev": "func start",
 		"start": "func start",
 		"test": "vitest"

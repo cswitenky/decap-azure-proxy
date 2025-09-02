@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decap Azure Proxy</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .endpoint {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        .status {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Decap Azure Proxy</h1>
+        <p class="status">Service is running</p>
+    </div>
+    
+    <h2>Available Endpoints</h2>
+    <div class="endpoint">GET /api/auth?provider=github</div>
+    <div class="endpoint">GET /api/callback?provider=github&code=...</div>
+    
+    <h2>About</h2>
+    <p>This is an Azure Static Web Apps GitHub OAuth proxy for <a href="https://github.com/decaporg/decap-cms">Decap CMS</a>. It allows deploying Decap CMS without requiring Netlify Identity or Git Gateway services.</p>
+    
+    <h2>Setup</h2>
+    <p>Configure your Decap CMS <code>config.yml</code> to use this proxy:</p>
+    <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto;">backend:
+  name: github
+  branch: main
+  repo: "your-username/your-repo"
+  base_url: https://your-proxy-domain.azurestaticapps.net</pre>
+</body>
+</html>
