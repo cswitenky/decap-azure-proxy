@@ -1,6 +1,6 @@
 # decap-azure-proxy
 
-An Azure Static Web Apps GitHub OAuth proxy for [Decap CMS](https://github.com/decaporg/decap-cms). This allows for deploying Decap without the Netlify Identity or Git Gateway services required to handle GitHub authentication so that the CMS client can make GitHub API calls.
+An Azure Static Web Apps GitHub OAuth proxy for [Decap CMS](https://github.com/decaporg/decap-cms). This allows for deploying Decap CMS without requiring Netlify Identity or Git Gateway services to handle GitHub authentication so that the CMS client can make GitHub API calls.
 
 This proxy is intended to be deployed on its own subdomain, separate from whatever website domain you're using Decap with.
 
@@ -12,18 +12,7 @@ You'll need to [configure a GitHub OAuth application](https://github.com/setting
 
 Save the OAuth client ID and secret for later, you'll need to provide those secrets to the Azure Static Web App.
 
-If your GitHub repo (where you want Decap CMS to push content to) is private, you will have to change the scope in `src/index.ts` to:
-```typescript
-scope: 'repo,user'
-```
-So, your code after the change should look like:
-```typescript
-const authorizationUri = oauth2.authorizeURL({
-  redirect_uri: `https://${url.hostname}/api/callback?provider=github`,
-  scope: 'repo,user',
-  state: randomBytes(4).toString('hex'),
-});
-```
+**Note**: The proxy automatically uses the `scope` parameter from Decap CMS. If your GitHub repo is private, Decap CMS will automatically request `repo` scope. For public repos, it uses `public_repo,user` scope.
 
 ### Deploy to Azure Static Web Apps
 
@@ -35,8 +24,8 @@ const authorizationUri = oauth2.authorizeURL({
    - Connect your GitHub repository
    - Set build details:
      - App location: `/`
-     - API location: `src`
-     - Output location: `` (empty)
+     - API location: `api`
+     - Output location: `dist`
 3. The GitHub Actions workflow will automatically deploy your app
 
 #### Option 2: Deploy via Azure CLI
@@ -45,15 +34,15 @@ const authorizationUri = oauth2.authorizeURL({
 2. Login: `az login`
 3. Create a Static Web App:
 ```bash
-az staticwebapp create \
-  --name decap-proxy \
-  --resource-group your-resource-group \
-  --source https://github.com/your-username/decap-azure-proxy \
-  --location "Central US" \
-  --branch main \
-  --app-location "/" \
-  --api-location "src" \
-  --output-location ""
+az staticwebapp create 
+  --name decap-proxy 
+  --resource-group your-resource-group 
+  --source https://github.com/your-username/decap-azure-proxy 
+  --location "Central US" 
+  --branch main 
+  --app-location "/" 
+  --api-location "api" 
+  --output-location "dist"
 ```
 
 #### Configure OAuth Secrets
@@ -86,12 +75,18 @@ git clone https://github.com/your-username/decap-azure-proxy
 cd decap-azure-proxy
 ```
 
-2. Install dependencies:
+2. Install dependencies for both static site and API:
 ```bash
+# Install static site dependencies
 npm install
+
+# Install API dependencies
+cd api
+npm install
+cd ..
 ```
 
-3. Create a `local.settings.json` file:
+3. Create a `local.settings.json` file in the `api` directory:
 ```json
 {
   "IsEncrypted": false,
@@ -111,12 +106,36 @@ npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
 5. Start the development server:
 ```bash
-npm run dev
+# Option 1: Use Azure Static Web Apps CLI (recommended)
+npm install -g @azure/static-web-apps-cli
+swa start . --api-location api
+
+# Option 2: Start API only
+cd api
+npm run start
 ```
 
-The API will be available at `http://localhost:7071/api/`
+The static site will be available at `http://localhost:4280/` and the API at `http://localhost:4280/api/` when using the SWA CLI.
+
+## Technology Stack
+
+- **Frontend**: Static HTML site
+- **Backend**: Azure Functions with TypeScript
+- **Runtime**: Node.js 18
+- **Build**: TypeScript compilation via `tsc`
+- **Deployment**: Azure Static Web Apps via GitHub Actions
 
 ## API Endpoints
 
-- `GET /api/auth?provider=github` - Initiates GitHub OAuth flow
-- `GET /api/callback?provider=github&code=...` - Handles OAuth callback
+- `GET /api` - Health check endpoint (returns "Hello 👋")
+- `GET /api/auth?provider=github&scope=<scope>` - Initiates GitHub OAuth flow
+- `GET /api/callback?provider=github&code=<code>` - Handles OAuth callback
+
+## Configuration
+
+### Environment Variables (Azure Portal)
+
+Set these in your Azure Static Web App Configuration:
+
+- `GITHUB_OAUTH_ID`: Your GitHub OAuth App Client ID
+- `GITHUB_OAUTH_SECRET`: Your GitHub OAuth App Client Secret
