@@ -2,7 +2,7 @@
   "name": "decap-azure-proxy-api",
   "version": "1.0.0", 
   "description": "Azure Functions API for Decap CMS GitHub OAuth proxy",
-  "main": "index.js",
+  "main": "dist/index.js",
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "func start"
+    "start": "func start",
+    "prestart": "npm run build"
   }
 }

@@ -48,7 +48,7 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/" # App source code path
-          api_location: "src" # Api source code path - use source TypeScript files
+          api_location: "api" # Api source code path - use source TypeScript files
           output_location: "dist" # Built app content directory - Oryx will create this
           skip_api_build: false # Let Oryx build the API
           github_id_token: ${{ steps.idtoken.outputs.result }}

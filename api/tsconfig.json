@@ -4,8 +4,8 @@
     "lib": ["ES2022"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "./build",
-    "rootDir": ".",
+    "outDir": "./dist",
+    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -13,6 +13,6 @@
     "resolveJsonModule": true,
     "types": ["node"]
   },
-  "include": ["./**/*"],
-  "exclude": ["node_modules", "build"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
