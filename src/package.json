@@ -1,0 +1,15 @@
+{
+  "name": "decap-azure-proxy-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for Decap CMS GitHub OAuth proxy",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "scripts": {
+    "build": "echo 'No build needed, TypeScript will be compiled by Oryx'"
+  }
+}

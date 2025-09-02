@@ -30,12 +30,6 @@ jobs:
           node-version: '18'
           cache: 'npm'
       
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build API
-        run: npm run build
-      
       - name: Get Id Token
         uses: actions/github-script@v6
         id: idtoken
@@ -54,10 +48,9 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/" # App source code path
-          api_location: "dist" # Api source code path - built Azure Functions
-          output_location: "build" # Built app content directory - contains index.html
-          app_build_command: "npm run build" # Explicit build command for Oryx
-          api_build_command: "npm run build" # Explicit API build command
+          api_location: "src" # Api source code path - use source TypeScript files
+          output_location: "" # Built app content directory - let Oryx handle it
+          skip_api_build: false # Let Oryx build the API
           github_id_token: ${{ steps.idtoken.outputs.result }}
           ###### End of Repository/Build Configurations ######
 
