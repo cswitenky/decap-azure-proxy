@@ -1,0 +1,11 @@
+# Oryx Build Configuration
+# This file helps Azure Static Web Apps understand how to build the project
+
+# Platform and version
+nodejs: 18
+
+# Build commands
+build: npm run build
+
+# Output directories
+output: build

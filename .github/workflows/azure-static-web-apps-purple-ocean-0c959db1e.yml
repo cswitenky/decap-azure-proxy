@@ -56,7 +56,8 @@ jobs:
           app_location: "/" # App source code path
           api_location: "dist" # Api source code path - built Azure Functions
           output_location: "build" # Built app content directory - contains index.html
-          skip_app_build: true # Skip app build since we only have static HTML
+          app_build_command: "npm run build" # Explicit build command for Oryx
+          api_build_command: "npm run build" # Explicit API build command
           github_id_token: ${{ steps.idtoken.outputs.result }}
           ###### End of Repository/Build Configurations ######
 

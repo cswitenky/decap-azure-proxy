@@ -2,6 +2,10 @@
 	"name": "decap-azure-proxy",
 	"version": "0.0.0",
 	"private": true,
+	"engines": {
+		"node": ">=18.0.0",
+		"npm": ">=8.0.0"
+	},
 	"scripts": {
 		"build": "tsc && cp host.json dist/ && mkdir -p build && cp index.html build/",
 		"dev": "func start",
