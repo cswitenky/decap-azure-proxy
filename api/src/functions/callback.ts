@@ -28,8 +28,8 @@ const callbackScriptResponse = (status: string, token: string): HttpResponseInit
 		const receiveMessage = (message) => {
 			console.log('Received message:', message);
 			window.opener.postMessage(
-				'authorization:github:${status}:${JSON.stringify({ token })}',
-				'*'
+				"authorization:github:${status}:" + JSON.stringify({ token: "${token}" }),
+				"*"
 			);
 			window.removeEventListener("message", receiveMessage, false);
 			window.close();
@@ -46,10 +46,9 @@ const callbackScriptResponse = (status: string, token: string): HttpResponseInit
 			setTimeout(() => {
 				console.log('Sending final authorization message');
 				window.opener.postMessage(
-					'authorization:github:${status}:${JSON.stringify({ token })}',
-					'*'
+					"authorization:github:${status}:" + JSON.stringify({ token: "${token}" }),
+					"*"
 				);
-				setTimeout(() => window.close(), 1000);
 			}, 1000);
 		} else {
 			console.error('No window.opener found!');
