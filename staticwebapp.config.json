@@ -2,9 +2,6 @@
   "platform": {
     "apiRuntime": "node:18"
   },
-  "navigationFallback": {
-    "rewrite": "/index.html"
-  },
   "routes": [
     {
       "route": "/auth",
@@ -17,6 +14,10 @@
     {
       "route": "/api/*",
       "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/*",
+      "statusCode": 404
     }
   ]
 }
