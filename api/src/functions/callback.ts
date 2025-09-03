@@ -57,7 +57,7 @@ app.http('callback', {
 		const oauth2 = createOAuth();
 		const accessToken = await oauth2.getToken({
 			code,
-			redirect_uri: `https://${url.hostname}/api/callback`,
+			redirect_uri: `${process.env.SITE_URL}/api/callback`,
 		});
 		
 		return callbackScriptResponse('success', accessToken);
